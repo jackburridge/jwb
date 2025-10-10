@@ -94,3 +94,6 @@ html_sidebars = {
     "blog": ["ablog/categories.html", "ablog/tagcloud.html", "ablog/archives.html"],
     "blog/**": ["ablog/postcard.html", "ablog/recentposts.html", "ablog/archives.html"],
 }
+
+
+html_favicon = "_static/favicon.ico"
