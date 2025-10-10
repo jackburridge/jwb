@@ -4,6 +4,12 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 from http.server import SimpleHTTPRequestHandler
+from typing import Any
+
+from docutils import nodes
+from docutils.nodes import TextElement
+from sphinx.transforms import SphinxTransform
+from sphinx.transforms.post_transforms.code import HighlightLanguageTransform
 
 # -- Path setup --------------------------------------------------------------
 
@@ -29,11 +35,7 @@ html_title = "Jack Burridge"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    "ablog",
-    "sphinx_copybutton",
-    "sphinx_togglebutton"
-]
+extensions = ["ablog", "sphinx_copybutton", "sphinx_togglebutton"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -97,3 +99,24 @@ html_sidebars = {
 
 
 html_favicon = "_static/favicon.ico"
+
+
+class TrimWhitespaceTransform(SphinxTransform):
+
+    default_priority = HighlightLanguageTransform.default_priority + 1
+
+    def apply(self, **kwargs: Any) -> None:
+        for lb_node in self.document.findall(nodes.literal_block):
+            self.strip_trailing(lb_node)
+
+    @staticmethod
+    def strip_trailing(node: TextElement) -> None:
+        source = node.rawsource.rstrip().lstrip()
+        node.rawsource = source
+        node[:] = [nodes.Text(source)]
+
+
+def setup(app):
+    app.add_transform(TrimWhitespaceTransform)
+
+    return {}
