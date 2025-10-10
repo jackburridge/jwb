@@ -8,7 +8,7 @@
    Jack Burridge
 
 :tags:
-   ASGI
+   ASGI, Kafka
 
 :category:
    python
@@ -116,20 +116,32 @@ Finally we get in 2019 to ASGI_, or the Asynchronous Server Gateway Interface. A
 intended to target some of its short comings, WSGI is inherently synchronous as it is a single synchronous callable, and
 it does not allow for easy support of protocols like websockets, or HTTP long polling.
 
-
 An ASGI application is a single asynchronous callable, it takes three arguments ``send`` which is a ``dict`` that
 contains details about the specific connection, ``send`` an asynchronous callable which the application uses to send
 messages, and ``receive`` an asynchronous callable that the application uses to receive messages.
 
-
+The equivalent ASGI of the WSGI, and CGI would be:
 
 .. literalinclude:: callable/asgi_example.py
+   :start-after: # application_start
+   :end-before: # application_end
+
+You could then run the WSGI wrapped application using a ASGI compatible webserver such as ``uvicorn``:
+
+.. literalinclude:: callable/asgi_example.py
+   :start-after: # using
+
+Like WSGI, ASGI applications can be wrapped, allowing for simple middleware.
+
+With the webservers can now process HTTP request **events**.
 
 ***************************
  Wait You Just Said Events
 ***************************
 
 Yes I did, well observed!
+
+This is where we get to the true magic.
 
 .. image:: callable/gateway-dark.svg
    :class: only-dark
