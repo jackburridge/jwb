@@ -16,9 +16,9 @@
 
 Abstractions in programming are great!
 
-If I want something to brew coffee, I can write a class ``CoffeeMachine`` with a method ``brew_coffee()``. Can then put
-my coffee machine in a cafe, brew a coffee. If I want to swap out my coffee machine because the old one leaves weird
-residue, I can do this. This is basically dependency injection.
+If I want something to brew coffee, I can write a class :py:class:`CoffeeMachine` with a method :py:meth:`brew_coffee`.
+Can then put my coffee machine in a cafe, brew a coffee. If I want to swap out my coffee machine because the old one
+leaves weird residue, I can do this. This is basically dependency injection.
 
 This method though is very OOP.
 
@@ -44,7 +44,7 @@ callable that brews a coffee, and then does another step... Adding Milk! (But on
    :start-after: # add_milk_start
    :end-before: # add_milk_end
 
-.. admonition:: Click to toggle
+.. admonition:: Click thttp://localhost:63342/jwb/_build/blog/2025/magic_of_the_callable_abstraction.htmlo toggle
    :class: dropdown
 
    Callable wrapper, takes a callable, then makes a callable (which calls taken the callable), and returns the newly
@@ -87,10 +87,10 @@ Here's a hello world:
 Set this up with any CGI compatible webserver, make a request, and boom working dynamic HTTP response handling.
 
 But then in 2003 came WSGI (:PEP:`333`, updated :PEP:`3333`), or Web Server Gateway Interface. The advent (probably not)
-of the callable abstraction. You define an application which is a callable that takes two arguments: ``environ`` (a
-dictionary with request and server information) and ``start_response`` (a callable to set the HTTP status, and headers
-that returns a ``write()`` callable). You can then return the body of the response by either calling the ``write()``
-callable with bytes, or by the application callable returning an iterable of bytes.
+of the callable abstraction. You define an application which is a callable that takes two arguments: :py:obj:`environ`
+(a dictionary with request and server information), and :py:func:`start_response` (a callable to set the HTTP status,
+and headers that returns a :py:func:`write` callable). You can then return the body of the response by either calling
+the :py:func:`write` callable with bytes, or by the application callable returning an iterable of bytes.
 
 The equivalent WSGI of the CGI would be:
 
@@ -110,15 +110,16 @@ You could then run the WSGI wrapped application using a WSGI compatible webserve
    :start-after: if __name__ == "__main__":
    :dedent:
 
-Every response will now have the ``X-Powered-By`` header.
+Every response will now have the ``"X-Powered-By"`` header.
 
 Finally we get in 2019 to ASGI_, or Asynchronous Server Gateway Interface. ASGI is a spiritual successor to WSGI,
 intended to target some of its short comings, WSGI is inherently synchronous as it is a single synchronous callable, and
 it does not allow for easy support of protocols like websockets, or HTTP long polling.
 
-An ASGI application is a single asynchronous callable, it takes three arguments ``send`` which is a ``dict`` that
-contains details about the specific connection, ``send`` an asynchronous callable which the application uses to send
-messages, and ``receive`` an asynchronous callable that the application uses to receive messages.
+An ASGI application is a single asynchronous callable, it takes three arguments :py:obj:`scope` which is a
+:py:obj:`dict` that contains details about the specific connection, :py:func:`send` an asynchronous callable which the
+application uses to send messages, and :py:func:`receive` an asynchronous callable that the application uses to receive
+messages.
 
 The equivalent ASGI of the WSGI, and CGI would be:
 
@@ -173,13 +174,13 @@ Now we have to transform the record to a request for the application:
 We first construct the scope dict:
 
 :type:
-   ``http``
+   ``"http"``
 
 :asgi:
    the version info for asgi
 
 :http_version:
-   ``1.1``
+   ``"1.1"``
 
 :method:
    comes from the passed in operation object
@@ -196,13 +197,13 @@ We first construct the scope dict:
 Then we pass in a receive callable which return a dict:
 
 :type:
-   ``http.request``
+   ``"http.request"``
 
 :body:
-   taken directly from the value of the record, but must be an emtpy byte array if ``None``
+   taken directly from the value of the record, but must be an emtpy byte array if :py:obj:`None`
 
 :more_body:
-   ``False``, the record value is all of the body, so we indicate there will be no more
+   :py:obj:`False`, the record value is all of the body, so we indicate there will be no more
 
 We can now connect to the Kafka broker, send a single message, and the application will be called. Great! So we've
 wrapped the application so it doesn't have to implement access to Kafka.
