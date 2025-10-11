@@ -29,6 +29,7 @@ extensions = [
     "sphinx_togglebutton",
     "sphinx.ext.intersphinx",
     "readtime",
+    "sphinxext.opengraph"
 ]
 
 templates_path = ["_templates"]
@@ -82,6 +83,10 @@ intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 
 readtime_include_patterns = ["blog/*/*"]
 
+
+# -- OpenGraph config ---------------------------------------
+
+ogp_site_url = "https://jackburridge.com"
 
 class TrimWhitespaceTransform(SphinxTransform):
 

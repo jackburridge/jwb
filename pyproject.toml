@@ -12,5 +12,6 @@ dependencies = [
     "sphinx>=8.2.3",
     "sphinx-copybutton>=0.5.2",
     "sphinx-togglebutton>=0.3.2",
+    "sphinxext-opengraph>=0.13.0",
     "uvicorn>=0.37.0",
 ]
