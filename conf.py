@@ -35,7 +35,12 @@ html_title = "Jack Burridge"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["ablog", "sphinx_copybutton", "sphinx_togglebutton"]
+extensions = [
+    "ablog",
+    "sphinx_copybutton",
+    "sphinx_togglebutton",
+    "sphinx.ext.intersphinx",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -100,6 +105,8 @@ html_sidebars = {
 
 
 html_favicon = "_static/favicon.ico"
+
+intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 
 
 class TrimWhitespaceTransform(SphinxTransform):

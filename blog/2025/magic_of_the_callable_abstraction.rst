@@ -2,10 +2,7 @@
    true
 
 :date:
-   2025-10-10
-
-:author:
-   Jack Burridge
+   2025-10-11
 
 :tags:
    ASGI, Kafka
@@ -66,7 +63,8 @@ Now to use it, we have a cafe, which we give a brew callable, in this case the s
 to add milk. Then when we ask the cafe to brew a coffee it adds the milk.
 
 .. literalinclude:: callable/coffee_example.py
-   :start-after: # using
+   :start-after: if __name__ == "__main__":
+   :dedent:
 
 **Yay!**
 
@@ -109,7 +107,8 @@ As an application is now just a callable you can wrap the callable so a new head
 You could then run the WSGI wrapped application using a WSGI compatible webserver:
 
 .. literalinclude:: callable/wsgi_example.py
-   :start-after: # using
+   :start-after: if __name__ == "__main__":
+   :dedent:
 
 Every response will now have the ``X-Powered-By`` header.
 
@@ -130,7 +129,7 @@ The equivalent ASGI of the WSGI, and CGI would be:
 You could then run the WSGI wrapped application using a ASGI compatible webserver such as uvicorn_:
 
 .. literalinclude:: callable/main.py
-   :start-after: # using
+   :start-after: if __name__ == "__main__":
 
 Like WSGI, ASGI applications can be wrapped, allowing for simple middleware.
 
@@ -249,6 +248,100 @@ This is starting to feel like an architectural pattern! It is, it's the:
         -e KAFKA_NUM_PARTITIONS=3 \
         apache/kafka:latest
 
+Sending
+=======
+
+HTTP has a response, we need to handle that!
+
+We will need a Kafka producer, so we will start that along with the consumer, and pass it to :py:func:`handle_record`:
+
+.. literalinclude:: callable/kafka_04.py
+   :start-after: # run_start
+   :end-before: # run_end
+
+In the handle record function we need to handle the running of the app, and our code to handle the send simultaneously.
+We do this by passing in the app awaitable, and a new :py:func:`handle_send` to :py:func:`asyncio.gather`:
+
+.. literalinclude:: callable/kafka_04.py
+   :start-after: # handle_send_start
+   :end-before: # handle_send_end
+
+You'll notice we didn't actually decide where to send the response. For this we will pull a pattern out of the bag of
+tricks that is `Enterprise Integration Patterns`_, in this case the `Return Address`_ pattern:
+
+.. image:: callable/return-address-dark.svg
+   :class: only-dark
+   :align: center
+
+.. image:: callable/return-address-light.svg
+   :class: only-light
+   :align: center
+
+Basically you have a single topic (channel using the EIP naming), different applications can send to this channel, but
+where does it send back. The way to deal with this is to include the return address in the request message. This has a
+few advantages, firstly you are only processing responses to requests you made, and by separating the channels you can
+add additional layers of security.
+
+So how do we handle this in our record handler. Well the best place to put metadata is usually a header, so we will look
+for the ``reply-to`` header, and use that, otherwise we drop the record, and move on:
+
+.. literalinclude:: callable/kafka_05.py
+   :start-after: # extract_reply_topic_from_headers_start
+   :end-before: # extract_reply_topic_from_headers_end
+
+Now we have to handle are sending. We modify the :py:class:`Send` class, this will keep a record of every message the
+app sends, and add a new method :py:meth:`Send.get` to allow us to pull the messages received in :py:func:`handle_send`.
+
+In the :py:func:`handle_send` we take the ``http.response.start``, and ``http.response.body`` messages to construct the
+value, and headers to send to the ``reply_topic``:
+
+.. literalinclude:: callable/kafka_05.py
+   :start-after: # handle_send_start
+   :end-before: # handle_send_end
+
+:topic:
+   this is the ``reply_topic`` we extracted before
+
+:value:
+   is the concatenation of all the body responses we get from the app
+
+:headers:
+   the headers are those we get from the app, plus we need to put the status code somewhere so this is added as a header
+
+And that's it we now have a working ASGI server!
+
+********************
+ Things To Think On
+********************
+
+Excluding the fact that the Kafka AGSI server has no error handling, no dead-letters, no logging, and is limited to only
+simple connection methods to Kafka (No auth!), this is quite cool right!
+
+This is definitely a useful method, but it does come with a few considerations:
+
+:Body Size:
+   Given the transport medium is Kafka you will be limited to making requests that fit within the size of the record
+
+:Get Method:
+   The ``GET`` method is possible, but I would advise against it, there are far better architectural patterns to pull
+   from
+
+:Commands:
+   Should you be using commands... sometimes yes, this will work well in those cases
+
+:Paths:
+   Paths are a thing. They can change. This example only supports a fixed path per topic. In HTTP you may have ``PUT
+   /order/{id}`` to update an order, you could do some madness like having multiple topics/channels (This will work in
+   some brokers), but for Kafka I would suggest mapping path parameters to headers.
+
+:Query Strings:
+   Can be handled by mapping them to headers, but as you're not going to use ``GET`` the use-cases are limited
+
+:Mapping Pain:
+   All that mapping from topic to operation was quite simple... when it was one endpoint. Write something that inspects
+   the app in the framework of your choice to construct the mapping for you. operationId_ is a consept in most web
+   frameworks, and could map directly to a topic name.
+
 .. _aiokafka: https://aiokafka.readthedocs.io/en/stable/
 
 .. _apache/kafka: https://hub.docker.com/r/apache/kafka/
@@ -258,5 +351,9 @@ This is starting to feel like an architectural pattern! It is, it's the:
 .. _enterprise integration patterns: https://www.enterpriseintegrationpatterns.com/index.html
 
 .. _kafka: https://kafka.apache.org/
+
+.. _operationid: https://swagger.io/docs/specification/v3_0/paths-and-operations/#operationid
+
+.. _return address: https://www.enterpriseintegrationpatterns.com/patterns/messaging/ReturnAddress.html
 
 .. _uvicorn: https://uvicorn.dev/

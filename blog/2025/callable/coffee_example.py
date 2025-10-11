@@ -33,7 +33,7 @@ class Cafe:
 
 # cafe_end
 
-# using
-brew_coffee_with_milk = add_milk(brew_coffee)
-cafe = Cafe(brew_coffee_with_milk)
-cafe.brew_coffee({"wants_milk": True})
+if __name__ == "__main__":
+    brew_coffee_with_milk = add_milk(brew_coffee)
+    cafe = Cafe(brew_coffee_with_milk)
+    cafe.brew_coffee({"wants_milk": True})

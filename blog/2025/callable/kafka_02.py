@@ -12,7 +12,7 @@ class Operation:
     path: str
 
 
-async def run(app, bootstrap_servers, operations: dict[str, Operation]):
+async def run(app, bootstrap_servers, operations):
     consumer = AIOKafkaConsumer(bootstrap_servers=bootstrap_servers)
     consumer.subscribe(list(operations.keys()))
     await consumer.start()

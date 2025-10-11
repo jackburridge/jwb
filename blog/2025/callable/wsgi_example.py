@@ -28,7 +28,6 @@ def add_header(app):
 # add_header_end
 
 
-# using
-with wsgiref.simple_server.make_server("", 8000, add_header(simple_app)) as httpd:
-    print("Serving on port 8000...")
-    httpd.serve_forever()
+if __name__ == "__main__":
+    with wsgiref.simple_server.make_server("", 8000, add_header(simple_app)) as httpd:
+        httpd.serve_forever()
