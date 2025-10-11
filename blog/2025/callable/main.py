@@ -1,7 +1,8 @@
 import uvicorn
 
-# application_start
-async def application(scope, receive, send):
+
+# app_start
+async def app(scope, receive, send):
     # this application does not support other types
     assert scope["type"] == "http"
     await send(
@@ -12,9 +13,10 @@ async def application(scope, receive, send):
         }
     )
     await send({"type": "http.response.body", "body": b"Hello, World!"})
+    print("called")
 
 
-# application_end
+# app_end
 
 # using
-uvicorn.run(application, host="0.0.0.0", port=8000)
+uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -50,7 +50,8 @@ callable that brews a coffee, and then does another step... Adding Milk! (But on
 .. admonition:: Click to toggle
    :class: dropdown
 
-   Callable wrapper, takes a callable, then makes a callable (which calls the callable), and returns the callable.
+   Callable wrapper, takes a callable, then makes a callable (which calls taken the callable), and returns the newly
+   made callable.
 
    Say that ten times fast!
 
@@ -77,7 +78,7 @@ Okay, now lets talk about a real world use-case: **HTTP**.
 
 But first a short aside for a short history lesson.
 
-Back in the days of the early internet there was CGI (:RFC:`3875`), or the Common Gateway Interface. This allowed you to
+Back in the days of the early internet there was CGI (:RFC:`3875`), or Common Gateway Interface. This allowed you to
 write a executable in any language that could handle a HTTP request, all you needed was access to standard input/output,
 and environment variables.
 
@@ -112,7 +113,7 @@ You could then run the WSGI wrapped application using a WSGI compatible webserve
 
 Every response will now have the ``X-Powered-By`` header.
 
-Finally we get in 2019 to ASGI_, or the Asynchronous Server Gateway Interface. ASGI is a spiritual successor to WSGI,
+Finally we get in 2019 to ASGI_, or Asynchronous Server Gateway Interface. ASGI is a spiritual successor to WSGI,
 intended to target some of its short comings, WSGI is inherently synchronous as it is a single synchronous callable, and
 it does not allow for easy support of protocols like websockets, or HTTP long polling.
 
@@ -122,18 +123,18 @@ messages, and ``receive`` an asynchronous callable that the application uses to 
 
 The equivalent ASGI of the WSGI, and CGI would be:
 
-.. literalinclude:: callable/asgi_example.py
-   :start-after: # application_start
-   :end-before: # application_end
+.. literalinclude:: callable/main.py
+   :start-after: # app_start
+   :end-before: # app_end
 
-You could then run the WSGI wrapped application using a ASGI compatible webserver such as ``uvicorn``:
+You could then run the WSGI wrapped application using a ASGI compatible webserver such as uvicorn_:
 
-.. literalinclude:: callable/asgi_example.py
+.. literalinclude:: callable/main.py
    :start-after: # using
 
 Like WSGI, ASGI applications can be wrapped, allowing for simple middleware.
 
-With the webservers can now process HTTP request **events**.
+With this webservers can now process HTTP request **events**.
 
 ***************************
  Wait You Just Said Events
@@ -143,6 +144,72 @@ Yes I did, well observed!
 
 This is where we get to the true magic.
 
+**Question:** What if we took an ASGI application, and used it to handle events?
+
+Receiving
+=========
+
+First things first, we need to do our boilerplate to receive events. Lets assume that we are going to use kafka_, so we
+will reach for the aiokafka_ library. Then we will consume events, and handle them with the application:
+
+.. literalinclude:: callable/kafka_01.py
+
+Looking good, but it's not actually doing anything, we need to subscribe to something. But what does that mean in this
+event-driven world. Well in the API world there is an idea of a path, and method which combined are your operation. So
+we need to add some kind of mapping of topic to operation:
+
+.. literalinclude:: callable/kafka_02.py
+   :start-after: # start
+   :end-before: # end
+
+Here we take a mapping of topic, to operation. We use the mapping keys, or in this case topics to subscribe, and we pass
+the operation object for the specific topic to the handle function.
+
+Now we have to transform the record to a request for the application:
+
+.. literalinclude:: callable/kafka_03.py
+   :start-after: # start
+   :end-before: # end
+
+We first construct the scope dict:
+
+:type:
+   ``http``
+
+:asgi:
+   the version info for asgi
+
+:http_version:
+   ``1.1``
+
+:method:
+   comes from the passed in operation object
+
+:path:
+   also taken operation object
+
+:query_string:
+   left black but a required field
+
+:headers:
+   pulled directly from the record
+
+Then we pass in a receive callable which return a dict:
+
+:type:
+   ``http.request``
+
+:body:
+   taken directly from the value of the record, but must be an emtpy byte array if ``None``
+
+:more_body:
+   ``False``, the record value is all of the body, so we indicate there will be no more
+
+We can now connect to the Kafka broker, send a single message, and the application will be called. Great! So we've
+wrapped the application so it doesn't have to implement access to Kafka.
+
+This is starting to feel like an architectural pattern! It is, it's the:
+
 .. image:: callable/gateway-dark.svg
    :class: only-dark
    :align: center
@@ -151,6 +218,45 @@ This is where we get to the true magic.
    :class: only-light
    :align: center
 
+.. epigraph::
+
+   The Messaging Gateway encapsulates messaging-specific code (e.g., the code required to send or receive a message) and separates it from the rest of the application code. This way, only the Messaging Gateway code knows about the messaging system; the rest of the application code does not.
+
+   -- `Enterprise Integration Patterns`_  (Hohpe and Woolf, 2003)
+
+.. note::
+   :class: dropdown
+
+   Running Kafka
+
+   You can run Kafka locally using the `apache/kafka`_ Docker image:
+
+   .. code::
+
+      docker run -d  \
+        --name broker \
+        -e KAFKA_NODE_ID=1 \
+        -e KAFKA_PROCESS_ROLES=broker,controller \
+        -e KAFKA_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093 \
+        -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 \
+        -e KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER \
+        -e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT \
+        -e KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:9093 \
+        -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
+        -e KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1 \
+        -e KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1 \
+        -e KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0 \
+        -e KAFKA_NUM_PARTITIONS=3 \
+        apache/kafka:latest
+
+.. _aiokafka: https://aiokafka.readthedocs.io/en/stable/
+
+.. _apache/kafka: https://hub.docker.com/r/apache/kafka/
+
 .. _asgi: https://asgi.readthedocs.io/en/latest/index.html
 
 .. _enterprise integration patterns: https://www.enterpriseintegrationpatterns.com/index.html
+
+.. _kafka: https://kafka.apache.org/
+
+.. _uvicorn: https://uvicorn.dev/
