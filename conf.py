@@ -3,9 +3,12 @@
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
+import math
+import re
 from http.server import SimpleHTTPRequestHandler
 from typing import Any
 
+from ablog.post import PostNode
 from docutils import nodes
 from docutils.nodes import TextElement
 from sphinx.transforms import SphinxTransform
@@ -124,7 +127,29 @@ class TrimWhitespaceTransform(SphinxTransform):
         node[:] = [nodes.Text(source)]
 
 
+class AddReadTime(SphinxTransform):
+    default_priority = 800
+
+    def apply(self, **kwargs: Any) -> None:
+        for post_node in self.document.findall(PostNode):
+            parent: nodes.section = post_node.parent
+            title_index = parent.first_child_matching_class(nodes.title)
+            if title_index is not None:
+                after_title = title_index + 1
+
+                if "read-time" not in parent.children[after_title]["classes"]:
+                    words = re.findall(r"[a-zA-Z0-9]+", parent.astext())
+                    read_time = math.ceil(len(words) / 200)
+
+                    paragraph = nodes.paragraph("", nodes.Text(f"{read_time} min read"))
+
+                    paragraph["classes"] = ["read-time"]
+                    parent.insert(after_title, paragraph)
+
+
 def setup(app):
     app.add_transform(TrimWhitespaceTransform)
+
+    app.add_transform(AddReadTime)
 
     return {}

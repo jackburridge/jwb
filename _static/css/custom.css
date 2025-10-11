@@ -1,3 +1,7 @@
 .logo__image {
   border-radius: 50%;
 }
+
+.read-time {
+  opacity: 0.5;
+}
