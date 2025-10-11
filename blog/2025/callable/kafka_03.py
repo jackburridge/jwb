@@ -16,10 +16,9 @@ async def run(app, bootstrap_servers, operations: dict[str, Operation]):
     consumer.subscribe(list(operations.keys()))
     await consumer.start()
 
-    while True:
-        async for consumer_record in consumer:
-            operation = operations[consumer_record.topic]
-            await handle_record(app, consumer_record, operation)
+    async for consumer_record in consumer:
+        operation = operations[consumer_record.topic]
+        await handle_record(app, consumer_record, operation)
 
 
 # start

@@ -8,9 +8,8 @@ async def run(app, bootstrap_servers):
     consumer = AIOKafkaConsumer(bootstrap_servers=bootstrap_servers)
     await consumer.start()
 
-    while True:
-        async for consumer_record in consumer:
-            await handle_record(app, consumer_record)
+    async for consumer_record in consumer:
+        await handle_record(app, consumer_record)
 
 
 async def handle_record(app, consumer_record):
