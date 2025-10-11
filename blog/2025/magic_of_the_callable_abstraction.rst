@@ -44,7 +44,7 @@ callable that brews a coffee, and then does another step... Adding Milk! (But on
    :start-after: # add_milk_start
    :end-before: # add_milk_end
 
-.. admonition:: Click thttp://localhost:63342/jwb/_build/blog/2025/magic_of_the_callable_abstraction.htmlo toggle
+.. admonition:: Click to toggle
    :class: dropdown
 
    Callable wrapper, takes a callable, then makes a callable (which calls taken the callable), and returns the newly
