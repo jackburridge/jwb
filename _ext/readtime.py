@@ -1,6 +1,7 @@
 import math
 import re
-from typing import Any, Optional
+from typing import Any
+from typing import Optional
 
 from docutils import nodes
 from sphinx.transforms import SphinxTransform

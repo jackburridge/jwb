@@ -1,7 +1,8 @@
 import asyncio
 from dataclasses import dataclass
 
-from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
+from aiokafka import AIOKafkaConsumer
+from aiokafka import AIOKafkaProducer
 from main import app
 
 
