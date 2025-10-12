@@ -13,7 +13,6 @@ async def app(scope, receive, send):
         }
     )
     await send({"type": "http.response.body", "body": b"Hello, World!"})
-    print("called")
 
 
 # app_end
