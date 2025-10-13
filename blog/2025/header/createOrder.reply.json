@@ -1,0 +1,14 @@
+{
+  "topic": "createOrder.reply",
+  "partition": 0,
+  "offset": 1,
+  "tstype": "create",
+  "ts": 1760274413270,
+  "broker": -1,
+  "headers": [
+    "x-request-id",
+    "631a8c3f-6ef6-4f5a-a2fb-a2771226f04a"
+  ],
+  "key": null,
+  "payload": "{\"id\": \"2b9ffe44-e265-40dc-84b4-7ef5b5cf611c\", \"skus\": [\"id-1371\", \"id-3716\"]}"
+}
