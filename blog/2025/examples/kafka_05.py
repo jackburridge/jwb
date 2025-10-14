@@ -12,8 +12,12 @@ class Operation:
     path: str
 
 
+def run(app, bootstrap_servers, operations):
+    asyncio.run(run_async(app, bootstrap_servers, operations))
+
+
 # run_start
-async def run(app, bootstrap_servers, operations):
+async def run_async(app, bootstrap_servers, operations):
     consumer = AIOKafkaConsumer(bootstrap_servers=bootstrap_servers)
     producer = AIOKafkaProducer(bootstrap_servers=bootstrap_servers)
     consumer.subscribe(list(operations.keys()))
@@ -126,4 +130,4 @@ async def handle_record(app, consumer_record, operation, producer):
 
 
 if __name__ == "__main__":
-    asyncio.run(run(app, "localhost:9092", {"topic": Operation("POST", "/hello")}))
+    run(app, "localhost:9092", {"topic": Operation("POST", "/hello")})
