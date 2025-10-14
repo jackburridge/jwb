@@ -18,9 +18,9 @@ Abstractions in programming are great!
 
 If I want something to brew coffee, I can write a class :py:class:`CoffeeMachine` with a method :py:meth:`brew_coffee`.
 Can then put my coffee machine in a cafe, brew a coffee. If I want to swap out my coffee machine because the old one
-leaves weird residue, I can do this. This is basically dependency injection.
+leaves weird residue, I can do this. This is essentially an example of dependency injection.
 
-This method though is very OOP.
+This method though is very `OOP`.
 
 If you wanted to add more steps to making a coffee, say frothing the milk, then adding cinnamon on top, you would have
 to add this to your method of brewing.
@@ -37,8 +37,9 @@ First we have a simple callable to brew coffee, it takes a request for coffee, a
    :start-after: # brew_coffee_start
    :end-before: # brew_coffee_end
 
-Then we add a callable wrapper, this will take a callable that can brew coffee, then returns a new call that calls the
-callable that brews a coffee, and then does another step... Adding Milk! (But only if you want it)
+Then we add a callable wrapper. This wrapper takes a callable that can brew coffee, and returns a new callable that
+first calls the original coffee-brewing callable, and then performs an additional step... Adding Milk! (But only if you
+request it)
 
 .. literalinclude:: callable/coffee_example.py
    :start-after: # add_milk_start
@@ -104,7 +105,7 @@ As an application is now just a callable you can wrap the callable so a new head
    :start-after: # add_header_start
    :end-before: # add_header_end
 
-You could then run the WSGI wrapped application using a WSGI compatible webserver:
+You could then run the wrapped WSGI application using a WSGI-compatible webserver:
 
 .. literalinclude:: callable/wsgi_example.py
    :start-after: if __name__ == "__main__":
@@ -155,7 +156,7 @@ will reach for the aiokafka_ library. Then we will consume events, and handle th
 .. literalinclude:: callable/kafka_01.py
 
 Looking good, but it's not actually doing anything, we need to subscribe to something. But what does that mean in this
-event-driven world. Well in the API world there is an idea of a path, and method which combined are your operation. So
+event-driven context? Well in the API world there is an idea of a path, and method which combined are your operation. So
 we need to add some kind of mapping of topic to operation:
 
 .. literalinclude:: callable/kafka_02.py
@@ -177,7 +178,7 @@ We first construct the scope dict:
    ``"http"``
 
 :asgi:
-   the version info for asgi
+   the version info for ASGI
 
 :http_version:
    ``"1.1"``
@@ -200,10 +201,10 @@ Then we pass in a receive callable which return a dict:
    ``"http.request"``
 
 :body:
-   taken directly from the value of the record, but must be an emtpy byte array if :py:obj:`None`
+   taken directly from the value of the record, but must be an empty byte array if :py:obj:`None`
 
 :more_body:
-   :py:obj:`False`, the record value is all of the body, so we indicate there will be no more
+   :py:obj:`False`, the record value is all of the body, so we indicate that there will be no more
 
 We can now connect to the Kafka broker, send a single message, and the application will be called. Great! So we've
 wrapped the application so it doesn't have to implement access to Kafka.
@@ -267,8 +268,8 @@ We do this by passing in the app awaitable, and a new :py:func:`handle_send` to 
    :start-after: # handle_send_start
    :end-before: # handle_send_end
 
-You'll notice we didn't actually decide where to send the response. For this we will pull a pattern out of the bag of
-tricks that is `Enterprise Integration Patterns`_, in this case the `Return Address`_ pattern:
+You'll notice that we haven't yet determined where to send the response. For this we will pull a pattern out of the bag
+of tricks that is `Enterprise Integration Patterns`_, in this case the `Return Address`_ pattern:
 
 .. image:: callable/return-address-dark.svg
    :class: only-dark
