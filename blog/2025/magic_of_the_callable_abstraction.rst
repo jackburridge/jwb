@@ -150,7 +150,7 @@ This is where we get to the true magic.
 Receiving
 =========
 
-First things first, we need to do our boilerplate to receive events. Lets assume that we are going to use kafka_, so we
+First things first, we need to do our boilerplate to receive events. Lets assume that we are going to use Kafka_, so we
 will reach for the aiokafka_ library. Then we will consume events, and handle them with the application:
 
 .. literalinclude:: examples/kafka_01.py

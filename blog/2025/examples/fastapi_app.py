@@ -24,7 +24,7 @@ class Order:
 
 @app.post("/orders", operation_id="createOrder")
 def create_order(order: Order):
-    # fake API for now
+    # fake API for this example
     return {"id": str(uuid4()), "items": order.items}
 
 
