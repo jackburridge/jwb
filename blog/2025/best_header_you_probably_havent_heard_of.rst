@@ -40,7 +40,7 @@ We need to have some kind of id to keep of our request. The header you may reach
 
 In your request message you simply add the ``X-Request-Id`` header:
 
-.. literalinclude:: header/createOrder.json
+.. literalinclude:: examples/createOrder.json
 
 .. note::
 
@@ -48,7 +48,7 @@ In your request message you simply add the ``X-Request-Id`` header:
 
 Then in your reply you add the the ``X-Request-Id``:
 
-.. literalinclude:: header/createOrder.reply.json
+.. literalinclude:: examples/createOrder.reply.json
    :name: createOrder.reply
 
 Now when your system receives the reply it know which request to create was replied to. Good that works!
@@ -99,7 +99,7 @@ Would give you the following response:
 This maps very nicely to the Request-Reply_ pattern. You can simply add the ``X-Echo-Set-Header`` to the request
 message:
 
-.. literalinclude:: header/createOrder.echoSetHeader.json
+.. literalinclude:: examples/createOrder.echoSetHeader.json
 
 This example would give you the same createOrder.reply_ as before.
 
@@ -145,14 +145,14 @@ mapping along with the notification event when the number of screws change, and 
 
 Now for an implementation. We are going to build some ASGI_ middleware:
 
-.. literalinclude:: header/echo_set_header.py
+.. literalinclude:: examples/echo_set_header.py
 
 This works by wrapping the app, and whenever a HTTP request is made we wrap the :py:func:`send` so we can add headers to
 the ``"http.response.start"`` based on the ``X-Echo-Set-Header``.
 
 You can now use this middleware with any ASGI_ compatible framework! Here is an example written with FastAPI_:
 
-.. literalinclude:: header/fastapi_app.py
+.. literalinclude:: examples/fastapi_app.py
    :start-after: # start
    :end-before: if __name__ == "__main__":
 
@@ -163,17 +163,17 @@ You can now use this middleware with any ASGI_ compatible framework! Here is an 
 And that's it ... To get it working in HTTP. But you need something else to get it working in Kafka. Stolen from my
 previous :ref:`post <magic_of_the_callable_abstraction>` simply use a Kafka_ ASGI server:
 
-.. literalinclude:: header/fastapi_app.py
+.. literalinclude:: examples/fastapi_app.py
    :start-after: if __name__ == "__main__":
    :dedent: 4
 
 Now if you make the following request:
 
-.. literalinclude:: header/createOrder.asgi.json
+.. literalinclude:: examples/createOrder.asgi.json
 
 You should get the following reply:
 
-.. literalinclude:: header/createOrder.reply.asgi.json
+.. literalinclude:: examples/createOrder.reply.asgi.json
 
 .. _asgi: https://asgi.readthedocs.io/en/latest/index.html
 

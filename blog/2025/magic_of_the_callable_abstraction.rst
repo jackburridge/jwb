@@ -33,7 +33,7 @@ This is where the callable abstraction comes in.
 
 First we have a simple callable to brew coffee, it takes a request for coffee, and returns you a coffee:
 
-.. literalinclude:: callable/coffee_example.py
+.. literalinclude:: examples/coffee_example.py
    :start-after: # brew_coffee_start
    :end-before: # brew_coffee_end
 
@@ -41,7 +41,7 @@ Then we add a callable wrapper. This wrapper takes a callable that can brew coff
 first calls the original coffee-brewing callable, and then performs an additional step... Adding Milk! (But only if you
 request it)
 
-.. literalinclude:: callable/coffee_example.py
+.. literalinclude:: examples/coffee_example.py
    :start-after: # add_milk_start
    :end-before: # add_milk_end
 
@@ -56,14 +56,14 @@ request it)
 Then we have a cafe, this takes the callable that can brew a coffee, when asked to brew it will call the brew callable
 which brews the coffee, and gives a coffee.
 
-.. literalinclude:: callable/coffee_example.py
+.. literalinclude:: examples/coffee_example.py
    :start-after: # cafe_start
    :end-before: # cafe_end
 
 Now to use it, we have a cafe, which we give a brew callable, in this case the simple brew method wrapped in the ability
 to add milk. Then when we ask the cafe to brew a coffee it adds the milk.
 
-.. literalinclude:: callable/coffee_example.py
+.. literalinclude:: examples/coffee_example.py
    :start-after: if __name__ == "__main__":
    :dedent:
 
@@ -83,7 +83,7 @@ and environment variables.
 
 Here's a hello world:
 
-.. literalinclude:: callable/cgi_example.sh
+.. literalinclude:: examples/cgi_example.sh
 
 Set this up with any CGI compatible webserver, make a request, and boom working dynamic HTTP response handling.
 
@@ -95,19 +95,19 @@ the :py:func:`write` callable with bytes, or by the application callable returni
 
 The equivalent WSGI of the CGI would be:
 
-.. literalinclude:: callable/wsgi_example.py
+.. literalinclude:: examples/wsgi_example.py
    :start-after: # simple_app_start
    :end-before: # simple_app_end
 
 As an application is now just a callable you can wrap the callable so a new header is added to every request:
 
-.. literalinclude:: callable/wsgi_example.py
+.. literalinclude:: examples/wsgi_example.py
    :start-after: # add_header_start
    :end-before: # add_header_end
 
 You could then run the wrapped WSGI application using a WSGI-compatible webserver:
 
-.. literalinclude:: callable/wsgi_example.py
+.. literalinclude:: examples/wsgi_example.py
    :start-after: if __name__ == "__main__":
    :dedent:
 
@@ -124,13 +124,13 @@ messages.
 
 The equivalent ASGI of the WSGI, and CGI would be:
 
-.. literalinclude:: callable/main.py
+.. literalinclude:: examples/main.py
    :start-after: # app_start
    :end-before: # app_end
 
 You could then run the WSGI wrapped application using a ASGI compatible webserver such as uvicorn_:
 
-.. literalinclude:: callable/main.py
+.. literalinclude:: examples/main.py
    :start-after: if __name__ == "__main__":
 
 Like WSGI, ASGI applications can be wrapped, allowing for simple middleware.
@@ -153,13 +153,13 @@ Receiving
 First things first, we need to do our boilerplate to receive events. Lets assume that we are going to use kafka_, so we
 will reach for the aiokafka_ library. Then we will consume events, and handle them with the application:
 
-.. literalinclude:: callable/kafka_01.py
+.. literalinclude:: examples/kafka_01.py
 
 Looking good, but it's not actually doing anything, we need to subscribe to something. But what does that mean in this
 event-driven context? Well in the API world there is an idea of a path, and method which combined are your operation. So
 we need to add some kind of mapping of topic to operation:
 
-.. literalinclude:: callable/kafka_02.py
+.. literalinclude:: examples/kafka_02.py
    :start-after: # start
    :end-before: # end
 
@@ -168,7 +168,7 @@ the operation object for the specific topic to the handle function.
 
 Now we have to transform the record to a request for the application:
 
-.. literalinclude:: callable/kafka_03.py
+.. literalinclude:: examples/kafka_03.py
    :start-after: # start
    :end-before: # end
 
@@ -211,11 +211,11 @@ wrapped the application so it doesn't have to implement access to Kafka.
 
 This is starting to feel like an architectural pattern! It is, it's the:
 
-.. image:: callable/gateway-dark.svg
+.. image:: examples/gateway-dark.svg
    :class: only-dark
    :align: center
 
-.. image:: callable/gateway-light.svg
+.. image:: examples/gateway-light.svg
    :class: only-light
    :align: center
 
@@ -257,25 +257,25 @@ HTTP has a response, we need to handle that!
 
 We will need a Kafka producer, so we will start that along with the consumer, and pass it to :py:func:`handle_record`:
 
-.. literalinclude:: callable/kafka_04.py
+.. literalinclude:: examples/kafka_04.py
    :start-after: # run_start
    :end-before: # run_end
 
 In the handle record function we need to handle the running of the app, and our code to handle the send simultaneously.
 We do this by passing in the app awaitable, and a new :py:func:`handle_send` to :py:func:`asyncio.gather`:
 
-.. literalinclude:: callable/kafka_04.py
+.. literalinclude:: examples/kafka_04.py
    :start-after: # handle_send_start
    :end-before: # handle_send_end
 
 You'll notice that we haven't yet determined where to send the response. For this we will pull a pattern out of the bag
 of tricks that is `Enterprise Integration Patterns`_, in this case the `Return Address`_ pattern:
 
-.. image:: callable/return-address-dark.svg
+.. image:: examples/return-address-dark.svg
    :class: only-dark
    :align: center
 
-.. image:: callable/return-address-light.svg
+.. image:: examples/return-address-light.svg
    :class: only-light
    :align: center
 
@@ -287,7 +287,7 @@ add additional layers of security.
 So how do we handle this in our record handler. Well the best place to put metadata is usually a header, so we will look
 for the ``reply-to`` header, and use that, otherwise we drop the record, and move on:
 
-.. literalinclude:: callable/kafka_05.py
+.. literalinclude:: examples/kafka_05.py
    :start-after: # extract_reply_topic_from_headers_start
    :end-before: # extract_reply_topic_from_headers_end
 
@@ -297,7 +297,7 @@ app sends, and add a new method :py:meth:`Send.get` to allow us to pull the mess
 In the :py:func:`handle_send` we take the ``http.response.start``, and ``http.response.body`` messages to construct the
 value, and headers to send to the ``reply_topic``:
 
-.. literalinclude:: callable/kafka_05.py
+.. literalinclude:: examples/kafka_05.py
    :start-after: # handle_send_start
    :end-before: # handle_send_end
 
