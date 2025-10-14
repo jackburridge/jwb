@@ -143,14 +143,14 @@ mapping along with the notification event when the number of screws change, and 
  An Implementation
 *******************
 
-Now for an implementation. He we are going to build some ASGI_ middleware:
+Now for an implementation. We are going to build some ASGI_ middleware:
 
 .. literalinclude:: header/echo_set_header.py
 
 This works by wrapping the app, and whenever a HTTP request is made we wrap the :py:func:`send` so we can add headers to
 the ``"http.response.start"`` based on the ``X-Echo-Set-Header``.
 
-You can now use this middleware with any ASGI_ compatible framework! Look here is an example written with FastAPI_:
+You can now use this middleware with any ASGI_ compatible framework! Here is an example written with FastAPI_:
 
 .. literalinclude:: header/fastapi_app.py
    :start-after: # start
