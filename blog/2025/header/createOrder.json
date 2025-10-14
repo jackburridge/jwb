@@ -12,5 +12,5 @@
     "631a8c3f-6ef6-4f5a-a2fb-a2771226f04a"
   ],
   "key": null,
-  "payload": "{\"skus\": [\"id-1371\",\"id-3716\"]}"
+  "payload": "{\"items\":[{\"sku\":\"id-1371\",\"count\":1},{\"sku\":\"id-3716\",\"count\":1}]}"
 }

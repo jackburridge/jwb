@@ -1,0 +1,16 @@
+{
+  "topic": "createOrder",
+  "partition": 0,
+  "offset": 0,
+  "tstype": "create",
+  "ts": 1760463134137,
+  "broker": -1,
+  "headers": [
+    "x-reply-set-header",
+    "inventory-sku: INV-1312",
+    "reply-to",
+    "createOrder.reply"
+  ],
+  "key": null,
+  "payload": "{\"items\":[{\"sku\":\"id-17236\",\"count\":1}]}"
+}
