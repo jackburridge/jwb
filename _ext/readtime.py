@@ -46,7 +46,9 @@ class AddReadTime(SphinxTransform):
                 title_index = title.parent.index(title)
 
                 words = WORD_PATTERN.findall(self.document.astext())
-                read_time = math.ceil(len(words) / 200)
+                read_time = math.ceil(
+                    len(words) / self.config.readtime_average_words_per_minute
+                )
 
                 paragraph = nodes.paragraph("", nodes.Text(f"{read_time} min read"))
 
@@ -57,6 +59,7 @@ class AddReadTime(SphinxTransform):
 def setup(app):
     app.add_config_value("readtime_include_patterns", [], "env")
     app.add_config_value("readtime_exclude_patterns", [], "env")
+    app.add_config_value("readtime_average_words_per_minute", 265, True)
 
     app.add_transform(AddReadTime)
 
