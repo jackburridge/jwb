@@ -1,24 +1,38 @@
 from dataclasses import dataclass
 from uuid import uuid4
 
-import uvicorn
+import kafka_05 as kafka2asgi
 from echo_set_header import EchoSetHeader
 from fastapi import FastAPI
+from kafka_05 import Operation
 
+
+# start
 app = FastAPI()
 
 
 @dataclass
+class Item:
+    sku: str
+    count: int
+
+
+@dataclass
 class Order:
-    skus: list[str]
+    items: list[Item]
 
 
-@app.post("/orders")
+@app.post("/orders", operation_id="createOrder")
 def create_order(order: Order):
-    return {"id": str(uuid4()), "skus": order.skus}
+    # fake API for now
+    return {"id": str(uuid4()), "items": order.items}
 
 
-app.add_middleware(EchoSetHeader)
+app.add_middleware(EchoSetHeader, echo_set_header="x-reply-set-header")
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    kafka2asgi.run(
+        app,
+        bootstrap_servers="localhost:9092",
+        operations={"createOrder": Operation("POST", "/orders")},
+    )

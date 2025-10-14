@@ -18,5 +18,6 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "fastapi>=0.119.0",
     "pre-commit>=4.3.0",
 ]
