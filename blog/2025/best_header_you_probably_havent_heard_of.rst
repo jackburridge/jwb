@@ -1,9 +1,6 @@
 :blogpost:
    true
 
-:date:
-   2025-10-14
-
 :tags:
    ASGI, Kafka, Event-Driven
 
