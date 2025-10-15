@@ -6,7 +6,7 @@
    :hidden:
 
    About <about>
-   ablog
+   blog
 
 *******************
  Recent blog posts
@@ -17,3 +17,4 @@
    :list-style: circle
    :category: Manual
    :sort:
+   :excerpts:
