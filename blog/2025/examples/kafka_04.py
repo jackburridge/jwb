@@ -91,4 +91,4 @@ async def handle_record(app, consumer_record, operation, producer):
 # handle_send_end
 
 if __name__ == "__main__":
-    run(app, "localhost:9092", {"topic": Operation("POST", "/hello")})
+    run(app, "localhost:9092", {"example_topic": Operation("POST", "/hello")})

@@ -161,10 +161,10 @@ we need to add some kind of mapping of topic to operation:
 
 .. literalinclude:: examples/kafka_02.py
    :start-after: # start
-   :end-before: # end
 
 Here we take a mapping of topic, to operation. We use the mapping keys, or in this case topics to subscribe, and we pass
-the operation object for the specific topic to the handle function.
+the operation object for the specific topic to the handle function. As a simple example we map the topic
+``example_topic`` to ``POST /hello``.
 
 Now we have to transform the record to a request for the application:
 

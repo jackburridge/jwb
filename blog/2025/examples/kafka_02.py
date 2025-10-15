@@ -26,13 +26,10 @@ async def run_async(app, bootstrap_servers, operations):
         await handle_record(app, consumer_record, operation)
 
 
-# end
-
-
 async def handle_record(app, consumer_record, operation):
     # we will implement this later
     raise NotImplementedError
 
 
 if __name__ == "__main__":
-    run(app, "localhost:9092", {"topic": Operation("POST", "/hello")})
+    run(app, "localhost:9092", {"example_topic": Operation("POST", "/hello")})
