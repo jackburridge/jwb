@@ -30,6 +30,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "readtime",
     "sphinxext.opengraph",
+    "sphinx_sitemap",
 ]
 
 templates_path = ["_templates"]
@@ -60,6 +61,7 @@ html_sidebars = {
     "blog/**": ["ablog/postcard.html", "ablog/recentposts.html", "ablog/archives.html"],
 }
 html_favicon = "_static/favicon.ico"
+html_baseurl = "https://jackburridge.com/"
 
 
 # -- ABlog ---------------------------------------------------
