@@ -62,6 +62,7 @@ html_sidebars = {
 }
 html_favicon = "_static/favicon.ico"
 html_baseurl = "https://jackburridge.com/"
+html_extra_path = ['robots.txt']
 
 
 # -- ABlog ---------------------------------------------------
@@ -90,6 +91,10 @@ readtime_include_patterns = ["blog/*/*"]
 
 ogp_site_url = "https://jackburridge.com"
 
+# -- sitemap ------------------------------------------------
+
+sitemap_filename = "sitemap-override.xml"
+sitemap_url_scheme = "{link}"
 
 class TrimWhitespaceTransform(SphinxTransform):
 
