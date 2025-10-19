@@ -1,6 +1,9 @@
 :blogpost:
    true
 
+:date:
+   2025-10-19
+
 :tags:
    ASGI, Kafka, Event-Driven
 
@@ -100,42 +103,6 @@ message:
 
 This example would give you the same createOrder.reply_ as before.
 
-*********
- But Why
-*********
-
-In a word, Flexibility!
-
-Now you have a way to send more data in the reply, without relying on the replier to understand how to. This means
-multiple applications can make a requests with different response data.
-
-This extensibility in an event-driven workflow is incredibly useful!
-
-Time for a contrived example:
-
--  You have a Factory that produces some toys they use screws to makes the toys
--  When the amount of screws in the inventory changes an event is published
--  When the amount of screws they have in the Factory goes below a certain amount they want to order new ones from a
-   wholesaler
--  When the order has been made they want to update the Factory inventory to mark the screws as pending delivery
-
-In order the process would be something like this:
-
-#. The amount of screws in the inventory changes, an event is published to notify this change, and the amount of screws
-   has dropped below the order threshold
-#. Your system makes a request to the wholesaler, looking up the SKU (Stock keeping unit), mapping it to the SKU of the
-   wholesaler
-#. The order response is received, it contains the wholesalers SKU so you look up the mapping to your SKU
-#. You make a request to update your inventory with the pending order using the inventories SKU
-
-You'll notice in step 3 that we are looking up the SKU again. We have a mechanism now so we don't need to do that. If we
-use ``X-Echo-Set-Header`` we can put the inventory SKU in a response header: ``x-echo-set-header: inventory-sku:
-INV-1312``.
-
-You have now reduced the number of calls your system need to make. The systems can be independent, or have outages, and
-you would still be able to make the request to update the inventory at the end. In the best case, you would send the SKU
-mapping along with the notification event when the number of screws change, and you would never have to do a lookup!
-
 *******************
  An Implementation
 *******************
@@ -171,6 +138,42 @@ Now if you make the following request:
 You should get the following reply:
 
 .. literalinclude:: examples/createOrder.reply.asgi.json
+
+*********
+ But Why
+*********
+
+In a word, Flexibility!
+
+Now you have a way to send more data in the reply, without relying on the replier to understand how to. This means
+multiple applications can make a requests with different response data.
+
+This extensibility in an event-driven workflow is incredibly useful!
+
+Time for a contrived example:
+
+-  You have a Factory that produces some toys they use screws to makes the toys
+-  When the amount of screws in the inventory changes an event is published
+-  When the amount of screws they have in the Factory goes below a certain amount they want to order new ones from a
+   wholesaler
+-  When the order has been made they want to update the Factory inventory to mark the screws as pending delivery
+
+In order the process would be something like this:
+
+#. The amount of screws in the inventory changes, an event is published to notify this change, and the amount of screws
+   has dropped below the order threshold
+#. Your system makes a request to the wholesaler, looking up the SKU (Stock keeping unit), mapping it to the SKU of the
+   wholesaler
+#. The order response is received, it contains the wholesalers SKU so you look up the mapping to your SKU
+#. You make a request to update your inventory with the pending order using the inventories SKU
+
+You'll notice in step 3 that we are looking up the SKU again. We have a mechanism now so we don't need to do that. If we
+use ``X-Echo-Set-Header`` we can put the inventory SKU in a response header: ``x-echo-set-header: inventory-sku:
+INV-1312``.
+
+You have now reduced the number of calls your system need to make. The systems can be independent, or have outages, and
+you would still be able to make the request to update the inventory at the end. In the best case, you would send the SKU
+mapping along with the notification event when the number of screws change, and you would never have to do a lookup!
 
 .. _asgi: https://asgi.readthedocs.io/en/latest/index.html
 
