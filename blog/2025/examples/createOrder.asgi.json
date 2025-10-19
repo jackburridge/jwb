@@ -7,7 +7,7 @@
   "broker": -1,
   "headers": [
     "x-reply-set-header",
-    "inventory-sku: INV-1312",
+    "x-request-id: e9ec5e06-acd5-11f0-8f80-7b61ed1de8a6",
     "reply-to",
     "createOrder.reply"
   ],

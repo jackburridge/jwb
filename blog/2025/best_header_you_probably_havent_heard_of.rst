@@ -168,7 +168,7 @@ In order the process would be something like this:
 #. You make a request to update your inventory with the pending order using the inventories SKU
 
 You'll notice in step 3 that we are looking up the SKU again. We have a mechanism now so we don't need to do that. If we
-use ``X-Echo-Set-Header`` we can put the inventory SKU in a response header: ``x-echo-set-header: inventory-sku:
+use ``X-Echo-Set-Header`` we can put the inventory SKU in a response header: ``x-reply-set-header: inventory-sku:
 INV-1312``.
 
 You have now reduced the number of calls your system need to make. The systems can be independent, or have outages, and
