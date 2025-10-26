@@ -14,7 +14,7 @@
  Significance Of Performance Testing
 #####################################
 
-Performance testing is a bit tricky, some systems are hard to test, results are hard to interpret, and specific
+Performance testing is a bit tricky. Some systems are hard to test, results are hard to interpret, and specific
 workloads are hard to simulate.
 
 I've had to run performance tests at every job I've ever had. Over the years I have come to some realisations:
