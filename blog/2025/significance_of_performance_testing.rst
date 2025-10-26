@@ -231,7 +231,7 @@ This isn’t the end of the story; this was just a Load Test. To name a few othe
 :Stress Test:
    To push the system beyond its breaking point, and see how it recovers
 
-:Stress Test:
+:Spike Test:
    To check how the system handles sudden increases in traffic
 
 Locust_ also has support for distributed load testing allowing you to simulate millions of users! You can test for true
