@@ -62,7 +62,7 @@ html_sidebars = {
 }
 html_favicon = "_static/favicon.ico"
 html_baseurl = "https://jackburridge.com/"
-html_extra_path = ['robots.txt']
+html_extra_path = ["robots.txt"]
 
 
 # -- ABlog ---------------------------------------------------
@@ -79,7 +79,11 @@ post_auto_excerpt = 2
 
 # -- intersphinx ---------------------------------------------
 
-intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "locust": ("http://docs.locust.io/en/stable", None),
+    "gevent": ("https://www.gevent.org/", None),
+}
 
 # -- readtime -----------------------------------------------
 
@@ -95,6 +99,7 @@ ogp_site_url = "https://jackburridge.com"
 
 sitemap_filename = "sitemap-override.xml"
 sitemap_url_scheme = "{link}"
+
 
 class TrimWhitespaceTransform(SphinxTransform):
 
