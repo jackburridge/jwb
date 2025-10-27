@@ -182,7 +182,7 @@ analysis:
 We now have the tests in place to allow us to test a change. In the original ``kafka2asgi`` record handling was in the
 following loop:
 
-.. literalinclude:: examples/kafka_05.py
+.. literalinclude:: examples/kafka2asgi_05.py
    :start-after: # run_start
    :end-before: # run_end
 
@@ -190,7 +190,7 @@ Each record is consumed, and processed via our application. This is done seriall
 hypothesize that the records could be processed faster if we were to call the application for each record in a separate
 task. The modification for this would be:
 
-.. literalinclude:: examples/kafka_06.py
+.. literalinclude:: examples/kafka2asgi_06.py
    :start-after: # run_start
    :end-before: # run_end
 

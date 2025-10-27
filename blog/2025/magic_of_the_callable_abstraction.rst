@@ -153,13 +153,13 @@ Receiving
 First things first, we need to do our boilerplate to receive events. Lets assume that we are going to use Kafka_, so we
 will reach for the aiokafka_ library. Then we will consume events, and handle them with the application:
 
-.. literalinclude:: examples/kafka_01.py
+.. literalinclude:: examples/kafka2asgi_01.py
 
 Looking good, but it's not actually doing anything, we need to subscribe to something. But what does that mean in this
 event-driven context? Well in the API world there is an idea of a path, and method which combined are your operation. So
 we need to add some kind of mapping of topic to operation:
 
-.. literalinclude:: examples/kafka_02.py
+.. literalinclude:: examples/kafka2asgi_02.py
    :start-after: # start
 
 Here we take a mapping of topic, to operation. We use the mapping keys, or in this case topics to subscribe, and we pass
@@ -168,7 +168,7 @@ the operation object for the specific topic to the handle function. As a simple 
 
 Now we have to transform the record to a request for the application:
 
-.. literalinclude:: examples/kafka_03.py
+.. literalinclude:: examples/kafka2asgi_03.py
    :start-after: # start
    :end-before: # end
 
@@ -257,14 +257,14 @@ HTTP has a response, we need to handle that!
 
 We will need a Kafka producer, so we will start that along with the consumer, and pass it to :py:func:`handle_record`:
 
-.. literalinclude:: examples/kafka_04.py
+.. literalinclude:: examples/kafka2asgi_04.py
    :start-after: # run_start
    :end-before: # run_end
 
 In the handle record function we need to handle the running of the app, and our code to handle the send simultaneously.
 We do this by passing in the app awaitable, and a new :py:func:`handle_send` to :py:func:`asyncio.gather`:
 
-.. literalinclude:: examples/kafka_04.py
+.. literalinclude:: examples/kafka2asgi_04.py
    :start-after: # handle_send_start
    :end-before: # handle_send_end
 
@@ -287,7 +287,7 @@ add additional layers of security.
 So how do we handle this in our record handler. Well the best place to put metadata is usually a header, so we will look
 for the ``reply-to`` header, and use that, otherwise we drop the record, and move on:
 
-.. literalinclude:: examples/kafka_05.py
+.. literalinclude:: examples/kafka2asgi_05.py
    :start-after: # extract_reply_topic_from_headers_start
    :end-before: # extract_reply_topic_from_headers_end
 
@@ -297,7 +297,7 @@ app sends, and add a new method :py:meth:`Send.get` to allow us to pull the mess
 In the :py:func:`handle_send` we take the ``http.response.start``, and ``http.response.body`` messages to construct the
 value, and headers to send to the ``reply_topic``:
 
-.. literalinclude:: examples/kafka_05.py
+.. literalinclude:: examples/kafka2asgi_05.py
    :start-after: # handle_send_start
    :end-before: # handle_send_end
 
