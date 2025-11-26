@@ -6,6 +6,7 @@
    :hidden:
 
    About <about>
+   asyncfast
    blog
 
 *******************
